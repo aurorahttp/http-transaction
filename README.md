@@ -5,10 +5,10 @@ HTTP Transaction manage a request to a response workflow. The workflow includes 
 apply HTTP middlewares, apply HTTP response filters and returns a response.
 
 ```
-   ------ request  ---- filter --->       
-                                  |    
-   Transaction               middleware 
-                                  |
-   <----- response ---- filter ---- 
+        ------ request  ---- Filter --->       
+       |                               |    
+   Transaction                    Middleware 
+       |                               |
+        <----- response ---- Filter ---- 
  ```
  It support HTTP Message Interface(PSR-7).
