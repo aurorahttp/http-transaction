@@ -1,0 +1,34 @@
+{
+    "name": "panlatent/http-transaction",
+    "description": "HTTP Transaction manage a request to a response workflow",
+    "type": "library",
+    "require": {
+        "php": ">=7.0",
+        "psr/http-message": "~1.0",
+        "panlatent/http-foundation": "~1.0",
+        "panlatent/http-server-filter": "~1.0",
+        "http-interop/http-server-middleware": "^1.0",
+        "http-interop/http-server-handler": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "panlatent",
+            "email": "panlatent@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Panlatent\\Http\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
