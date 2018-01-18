@@ -52,7 +52,7 @@ class FilterQueue extends SplPriorityQueue
             }
             if ($filter instanceof RequestFilterInterface) {
                 $request = $filter->process($request);
-            } elseif ($filter instanceof ResponseInterface) {
+            } elseif ($filter instanceof ResponseFilterInterface) {
                 $queue[] = [$filter, $priority];
             }
         }
