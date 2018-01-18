@@ -2,18 +2,15 @@
 
 namespace Panlatent\Http;
 
-use Panlatent\Http\Server\RequestFilterInterface;
+use Interop\Http\Server\RequestHandlerInterface;
+use Panlatent\ContextSensitiveInterface;
 use Panlatent\Http\Transaction\Context;
 use Panlatent\Http\Transaction\FilterQueue;
 use Panlatent\Http\Transaction\MiddlewareStack;
-use Panlatent\Http\Transaction\PriorityInterface;
-use Panlatent\Http\Transaction\ProcessableInterface;
-use Panlatent\Http\Transaction\ProcessInquiryInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Transaction implements ContextAcceptInterface
+class Transaction implements ContextSensitiveInterface
 {
     const STATUS_ERROR = 0;
     const STATUS_INIT = 1;
@@ -29,6 +26,10 @@ class Transaction implements ContextAcceptInterface
     const STATUS_DONE = 11;
 
     /**
+     * @var Context
+     */
+    protected $context;
+    /**
      * @var FilterQueue
      */
     protected $filters;
@@ -37,83 +38,54 @@ class Transaction implements ContextAcceptInterface
      */
     protected $middlewares;
     /**
-     * @var Context
+     * @var RequestHandlerInterface
      */
-    protected $context;
+    protected $requestHandler;
     /**
      * @var int int
      */
     protected $status;
-    /**
-     * @var callable[]
-     */
-    protected $notices = [];
 
     public function __construct()
     {
-        $this->requestFilters = new FilterQueue();
-        $this->responseFilters = new FilterQueue();
-        $this->middlewares = new MiddlewareStack();
+        $this->filters = new FilterQueue($this);
+        $this->middlewares = new MiddlewareStack($this);
         $this->context = new Context();
         $this->status = static::STATUS_INIT;
     }
 
-
-    public function handle(ServerRequestInterface $request): RequestInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
 
         $this->status = static::STATUS_REQUEST_FILTER_BEFORE;
-
-
         $this->status = static::STATUS_REQUEST_FILTER_DOING;
-        $queue = new FilterQueue();
-        while (! $this->filters->isEmpty()) {
-            $filter = $this->filters->extract();
-            if ($filter instanceof PriorityInterface) {
-                $priority = $filter->getPriority();
-            } else {
-                $priority = 0;
-            }
-            if ($filter instanceof ProcessableInterface && ! $filter->canProcess()) {
-                $queue->insert($filter, $priority);
-                continue;
-            }
-            if ($filter instanceof RequestFilterInterface) {
-                $request = $filter->process($request);
-                $this->watchOptions();
-            } elseif ($filter instanceof ResponseInterface) {
-                $queue->insert($filter, $priority);
-            }
-        }
-        $this->filters = $queue;
+
+        $request = $this->filters->runRequest($request);
         $this->status = static::STATUS_REQUEST_FILTER_AFTER;
 
         $this->status = static::STATUS_MIDDLEWARE_BEFORE;
         $this->status = static::STATUS_MIDDLEWARE_DOING;
+        $response = $this->middlewares->run($request);
+
         $this->status = static::STATUS_MIDDLEWARE_AFTER;
+
         $this->status = static::STATUS_RESPONSE_FILTER_BEFORE;
         $this->status = static::STATUS_RESPONSE_FILTER_DOING;
+        $response = $this->filters->runResponse($response);
+
         $this->status = static::STATUS_RESPONSE_FILTER_AFTER;
         $this->status = static::STATUS_DONE;
+
+        return $response;
     }
 
-    public function acceptContext(ContextInterface $context)
+    /**
+     * @return Context
+     */
+    public function getContext(): Context
     {
-
+        return $this->context;
     }
-
-    public function watchContext()
-    {
-
-    }
-
-    public function noticeStatus()
-    {
-        foreach ($this->notices as $notice) {
-            call_user_func($notice, $this);
-        }
-    }
-
 
     /**
      * @return FilterQueue
@@ -122,7 +94,6 @@ class Transaction implements ContextAcceptInterface
     {
         return $this->filters;
     }
-
 
     /**
      * @return MiddlewareStack
@@ -133,11 +104,19 @@ class Transaction implements ContextAcceptInterface
     }
 
     /**
-     * @return Context
+     * @return RequestHandlerInterface
      */
-    public function getContext(): Context
+    public function getRequestHandler(): RequestHandlerInterface
     {
-        return $this->context;
+        return $this->requestHandler;
+    }
+
+    /**
+     * @param RequestHandlerInterface $requestHandler
+     */
+    public function setRequestHandler(RequestHandlerInterface $requestHandler)
+    {
+        $this->requestHandler = $requestHandler;
     }
 
     /**

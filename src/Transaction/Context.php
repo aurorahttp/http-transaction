@@ -2,7 +2,7 @@
 
 namespace Panlatent\Http\Transaction;
 
-class Context extends \Panlatent\Http\Context
+class Context extends \Panlatent\Context
 {
 
 }

@@ -4,15 +4,19 @@ namespace Panlatent\Http;
 
 use Interop\Http\Server\MiddlewareInterface;
 use Interop\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseInterface;
+use Panlatent\ContextInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-abstract class Middleware implements MiddlewareInterface, ContextAcceptInterface
+abstract class Middleware implements MiddlewareInterface
 {
     /**
      * @var ContextInterface
      */
     protected $context;
+    /**
+     * @var MiddlewareInterface;
+     */
+    protected $next;
 
     /**
      * @param ContextInterface $context
@@ -22,10 +26,16 @@ abstract class Middleware implements MiddlewareInterface, ContextAcceptInterface
         $this->context = $context;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function setNext($middleware)
     {
-
-
+        $this->next = $middleware;
     }
 
+    public function next(ServerRequestInterface $request, RequestHandlerInterface $handler)
+    {
+        if (! $this->next) {
+            return $request;
+        }
+        return $this->process($request, $handler);
+    }
 }
