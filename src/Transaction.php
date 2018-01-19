@@ -26,6 +26,14 @@ class Transaction implements ContextSensitiveInterface
     const STATUS_DONE = 11;
 
     /**
+     * @var ServerRequestInterface
+     */
+    protected $request;
+    /**
+     * @var ResponseInterface
+     */
+    protected $response;
+    /**
      * @var Context
      */
     protected $context;
@@ -46,21 +54,21 @@ class Transaction implements ContextSensitiveInterface
      */
     protected $status;
 
-    public function __construct()
+    public function __construct(ServerRequestInterface $request)
     {
+        $this->request = $request;
         $this->filters = new FilterQueue($this);
         $this->middlewares = new MiddlewareStack($this);
         $this->context = new Context();
         $this->status = static::STATUS_INIT;
     }
 
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handle(): ResponseInterface
     {
-
         $this->status = static::STATUS_REQUEST_FILTER_BEFORE;
         $this->status = static::STATUS_REQUEST_FILTER_DOING;
 
-        $request = $this->filters->runRequest($request);
+        $request = $this->filters->runRequest($this->request);
         $this->status = static::STATUS_REQUEST_FILTER_AFTER;
 
         $this->status = static::STATUS_MIDDLEWARE_BEFORE;
@@ -76,7 +84,26 @@ class Transaction implements ContextSensitiveInterface
         $this->status = static::STATUS_RESPONSE_FILTER_AFTER;
         $this->status = static::STATUS_DONE;
 
+        $this->request = $request;
+        $this->response = $response;
+
         return $response;
+    }
+
+    /**
+     * @return ServerRequestInterface
+     */
+    public function getRequest(): ServerRequestInterface
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    public function getResponse(): ResponseInterface
+    {
+        return $this->response;
     }
 
     /**
