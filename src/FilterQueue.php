@@ -1,12 +1,11 @@
 <?php
 
-namespace Panlatent\Http\Transaction;
+namespace Aurora\Http\Transaction;
 
 use InvalidArgumentException;
-use Panlatent\Http\Server\FilterInterface;
-use Panlatent\Http\Server\RequestFilterInterface;
-use Panlatent\Http\Server\ResponseFilterInterface;
-use Panlatent\Http\Transaction;
+use Aurora\Http\Message\Filter\FilterInterface;
+use Aurora\Http\Message\Filter\RequestFilterInterface;
+use Aurora\Http\Message\Filter\ResponseFilterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SplPriorityQueue;

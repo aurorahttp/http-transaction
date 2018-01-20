@@ -1,10 +1,8 @@
 <?php
 
-namespace Panlatent\Http\Transaction;
+namespace Aurora\Http\Transaction;
 
 use Interop\Http\Server\MiddlewareInterface;
-use Panlatent\Http\Middleware;
-use Panlatent\Http\Transaction;
 use Psr\Http\Message\ServerRequestInterface;
 use SplStack;
 

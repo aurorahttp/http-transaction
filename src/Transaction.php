@@ -1,12 +1,9 @@
 <?php
 
-namespace Panlatent\Http;
+namespace Aurora\Http\Transaction;
 
 use Interop\Http\Server\RequestHandlerInterface;
-use Panlatent\ContextSensitiveInterface;
-use Panlatent\Http\Transaction\Context;
-use Panlatent\Http\Transaction\FilterQueue;
-use Panlatent\Http\Transaction\MiddlewareStack;
+use Panlatent\Context\ContextSensitiveInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

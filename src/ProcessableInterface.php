@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Panlatent\Http\Transaction;
+namespace Aurora\Http\Transaction;
 
 
 interface ProcessableInterface

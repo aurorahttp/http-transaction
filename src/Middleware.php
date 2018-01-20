@@ -1,10 +1,10 @@
 <?php
 
-namespace Panlatent\Http;
+namespace Aurora\Http\Transaction;
 
 use Interop\Http\Server\MiddlewareInterface;
 use Interop\Http\Server\RequestHandlerInterface;
-use Panlatent\ContextInterface;
+use Panlatent\Context\ContextInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 abstract class Middleware implements MiddlewareInterface

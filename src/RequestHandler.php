@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Panlatent\Http;
+namespace Aurora\Http\Transaction;
 
 use Interop\Http\Server\RequestHandlerInterface;
 

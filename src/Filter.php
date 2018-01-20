@@ -1,11 +1,8 @@
 <?php
 
-namespace Panlatent\Http;
+namespace Aurora\Http\Transaction;
 
-use Panlatent\Http\Server\FilterInterface;
-use Panlatent\Http\Transaction\PriorityInterface;
-use Panlatent\Http\Transaction\PriorityTrait;
-use Panlatent\Http\Transaction\ProcessableInterface;
+use Aurora\Http\Message\Filter\FilterInterface;
 
 abstract class Filter implements FilterInterface, ProcessableInterface, PriorityInterface
 {

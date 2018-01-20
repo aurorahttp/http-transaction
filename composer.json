@@ -1,14 +1,13 @@
 {
-    "name": "panlatent/http-transaction",
+    "name": "aurorahttp/http-transaction",
     "description": "HTTP Transaction manage a request to a response workflow",
     "type": "library",
     "require": {
         "php": ">=7.0",
         "psr/http-message": "~1.0",
-        "panlatent/http-foundation": "~1.0",
-        "panlatent/http-exception": "~1.0",
         "panlatent/context": " ~1.0",
-        "panlatent/http-server-filter": "~1.0",
+        "aurorahttp/http-foundation": "~1.0",
+        "aurorahttp/http-message-filter": "~1.0",
         "http-interop/http-server-middleware": "^1.0",
         "http-interop/http-server-handler": "^1.0"
     },
@@ -25,12 +24,16 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Panlatent\\Http\\": "src/"
+            "Aurora\\Http\\Transaction\\": "src/"
         }
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
+    },
+    "suggests": {
+        "guzzlehttp/psr7": "PSR-7 HTTP message library for guzzle",
+        "aurorahttp/http-message": "boost http message for aurorahttp"
     }
 }
