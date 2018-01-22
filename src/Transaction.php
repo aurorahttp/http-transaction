@@ -2,12 +2,13 @@
 
 namespace Aurora\Http\Transaction;
 
+use Aurora\Http\Handle\HandlerInterface;
 use Interop\Http\Server\RequestHandlerInterface;
 use Panlatent\Context\ContextSensitiveInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Transaction implements ContextSensitiveInterface
+class Transaction implements TransactionInterface, ContextSensitiveInterface, HandlerInterface
 {
     const STATUS_ERROR = 0;
     const STATUS_INIT = 1;
@@ -60,7 +61,19 @@ class Transaction implements ContextSensitiveInterface
         $this->status = static::STATUS_INIT;
     }
 
-    public function handle(): ResponseInterface
+    public function handle($request, HandlerInterface $handler)
+    {
+        if (! $request instanceof ServerRequestInterface) {
+            return $handler->handle($request, $handler);
+        }
+
+        $this->request = $request;
+        $this->response = $this->process();
+
+        return $this->response;
+    }
+
+    public function process()
     {
         $this->status = static::STATUS_REQUEST_FILTER_BEFORE;
         $this->status = static::STATUS_REQUEST_FILTER_DOING;
@@ -80,9 +93,6 @@ class Transaction implements ContextSensitiveInterface
 
         $this->status = static::STATUS_RESPONSE_FILTER_AFTER;
         $this->status = static::STATUS_DONE;
-
-        $this->request = $request;
-        $this->response = $response;
 
         return $response;
     }
