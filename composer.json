@@ -22,7 +22,7 @@
             "email": "panlatent@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Aurora\\Http\\Transaction\\": "src/"
