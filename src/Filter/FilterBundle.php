@@ -33,14 +33,13 @@ class FilterBundle implements MessageFilterInterface
         $this->bundle = new PriorityBundle();
     }
 
-    public function insert(MessageInterface $filter)
+    public function insert(MessageFilterInterface $filter)
     {
         if (! $filter instanceof HandlerInterface) {
             $filter = new ClosureHandler(function ($request, HandlerInterface $handler) use ($filter) {
                 if (! $request instanceof MessageInterface) {
                     return $handler->handle($request, $handler);
                 }
-                /** @var MessageFilterInterface $filter */
                 $request = $filter->process($request);
 
                 return $handler->handle($request, $handler);
