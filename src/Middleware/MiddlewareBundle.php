@@ -43,8 +43,7 @@ class MiddlewareBundle implements MiddlewareInterface
                 return $handler->handle($response, $handler);
             });
         }
-
-        $this->insert($middleware);
+        $this->bundle->insert($middleware);
     }
 
     /**

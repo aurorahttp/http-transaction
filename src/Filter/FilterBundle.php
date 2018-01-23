@@ -45,7 +45,7 @@ class FilterBundle implements MessageFilterInterface
                 return $handler->handle($request, $handler);
             });
         }
-        $this->insert($filter);
+        $this->bundle->insert($filter);
     }
 
     public function process(MessageInterface $request): MessageInterface
