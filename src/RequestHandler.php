@@ -2,9 +2,14 @@
 
 namespace Aurora\Http\Transaction;
 
-use Interop\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class RequestHandler implements RequestHandlerInterface
+class RequestHandler implements RequestHandlerInterface
 {
-
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        throw new TransactionException('Empty request handler');
+    }
 }

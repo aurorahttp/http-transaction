@@ -2,7 +2,13 @@
 
 namespace Aurora\Http\Transaction;
 
-interface TransactionInterface
+use Aurora\Http\Handler\HandlerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+interface TransactionInterface extends HandlerInterface
 {
-    public function process();
+    /**
+     * @return RequestHandlerInterface
+     */
+    public function getRequestHandler();
 }

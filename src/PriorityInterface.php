@@ -2,13 +2,8 @@
 
 namespace Aurora\Http\Transaction;
 
-interface PriorityInterface
+interface PriorityInterface extends \Aurora\Http\Handler\PriorityInterface
 {
-    /**
-     * @return int
-     */
-    public function getPriority();
-
     /**
      * @param int $priority
      */

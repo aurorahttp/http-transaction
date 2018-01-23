@@ -2,9 +2,9 @@
 
 namespace Aurora\Http\Transaction;
 
-use Aurora\Http\Message\Filter\FilterInterface;
+use Aurora\Http\Message\Filter\Filter as MessageFilter;
 
-abstract class Filter implements FilterInterface, PriorityInterface
+abstract class Filter extends MessageFilter implements PriorityInterface
 {
     use PriorityTrait;
 }

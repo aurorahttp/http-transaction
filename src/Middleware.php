@@ -2,40 +2,55 @@
 
 namespace Aurora\Http\Transaction;
 
-use Interop\Http\Server\MiddlewareInterface;
-use Interop\Http\Server\RequestHandlerInterface;
-use Panlatent\Context\ContextInterface;
+use Aurora\Http\Handler\Bundle;
+use Aurora\Http\Handler\HandlerInterface;
+use Aurora\Http\Transaction\Middleware\MiddlewareBundle;
+use Aurora\Http\Transaction\Middleware\MiddlewareProcessException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-abstract class Middleware implements MiddlewareInterface
+abstract class Middleware implements MiddlewareInterface, PriorityInterface
 {
+    use PriorityTrait;
     /**
-     * @var ContextInterface
+     * @var MiddlewareBundle
      */
-    protected $context;
+    protected $bundle;
     /**
-     * @var MiddlewareInterface;
+     * @var RequestHandlerInterface
      */
-    protected $next;
+    protected $handler;
 
-    /**
-     * @param ContextInterface $context
-     */
-    public function acceptContext(ContextInterface $context)
+    public function handle($request, HandlerInterface $next)
     {
-        $this->context = $context;
-    }
-
-    public function setNext($middleware)
-    {
-        $this->next = $middleware;
-    }
-
-    public function next(ServerRequestInterface $request, RequestHandlerInterface $handler)
-    {
-        if (! $this->next) {
-            return $request;
+        if (! $request instanceof ServerRequestInterface) {
+            return $next->handle($request, $next);
         }
-        return $this->process($request, $handler);
+        if ($next instanceof Bundle) {
+            $this->bundle = $next;
+        }
+        if (empty($this->handler)) {
+            throw new MiddlewareProcessException('Invalid server request handler');
+        }
+        $response = $this->process($request, $this->handler);
+
+        return $next->handle($response, $next);
+    }
+
+    /**
+     * @return RequestHandlerInterface
+     */
+    public function getHandler(): RequestHandlerInterface
+    {
+        return $this->handler;
+    }
+
+    /**
+     * @param RequestHandlerInterface $handler
+     */
+    public function setHandler(RequestHandlerInterface $handler)
+    {
+        $this->handler = $handler;
     }
 }

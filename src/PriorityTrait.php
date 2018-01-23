@@ -8,6 +8,7 @@ trait PriorityTrait
      * @var int
      */
     protected $priority = 0;
+
     /**
      * @return int
      */

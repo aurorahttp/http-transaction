@@ -2,13 +2,16 @@
 
 namespace Aurora\Http\Transaction;
 
-use Aurora\Http\Handle\HandlerInterface;
-use Interop\Http\Server\RequestHandlerInterface;
+use Aurora\Http\Handler\HandlerInterface;
+use Aurora\Http\Transaction\Filter\FilterBundle;
+use Aurora\Http\Transaction\Middleware\MiddlewareBundle;
 use Panlatent\Context\ContextSensitiveInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Transaction implements TransactionInterface, ContextSensitiveInterface, HandlerInterface
+class Transaction implements TransactionInterface, MiddlewareInterface, ContextSensitiveInterface
 {
     const STATUS_ERROR = 0;
     const STATUS_INIT = 1;
@@ -36,11 +39,11 @@ class Transaction implements TransactionInterface, ContextSensitiveInterface, Ha
      */
     protected $context;
     /**
-     * @var FilterQueue
+     * @var FilterBundle
      */
     protected $filters;
     /**
-     * @var MiddlewareStack
+     * @var MiddlewareBundle
      */
     protected $middlewares;
     /**
@@ -55,8 +58,8 @@ class Transaction implements TransactionInterface, ContextSensitiveInterface, Ha
     public function __construct(ServerRequestInterface $request)
     {
         $this->request = $request;
-        $this->filters = new FilterQueue($this);
-        $this->middlewares = new MiddlewareStack($this);
+        $this->filters = new FilterBundle($this);
+        $this->middlewares = new MiddlewareBundle($this);
         $this->context = new Context();
         $this->status = static::STATUS_INIT;
     }
@@ -68,28 +71,28 @@ class Transaction implements TransactionInterface, ContextSensitiveInterface, Ha
         }
 
         $this->request = $request;
-        $this->response = $this->process();
+        $this->response = $this->process($request, $this->requestHandler);
 
-        return $this->response;
+        return $handler->handle($this->response, $handler);
     }
 
-    public function process()
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $this->status = static::STATUS_REQUEST_FILTER_BEFORE;
         $this->status = static::STATUS_REQUEST_FILTER_DOING;
 
-        $request = $this->filters->runRequest($this->request);
+        $request = $this->filters->processServerRequest($this->request);
         $this->status = static::STATUS_REQUEST_FILTER_AFTER;
 
         $this->status = static::STATUS_MIDDLEWARE_BEFORE;
         $this->status = static::STATUS_MIDDLEWARE_DOING;
-        $response = $this->middlewares->run($request);
+        $response = $this->middlewares->process($request, $this->requestHandler);
 
         $this->status = static::STATUS_MIDDLEWARE_AFTER;
 
         $this->status = static::STATUS_RESPONSE_FILTER_BEFORE;
         $this->status = static::STATUS_RESPONSE_FILTER_DOING;
-        $response = $this->filters->runResponse($response);
+        $response = $this->filters->processResponse($response);
 
         $this->status = static::STATUS_RESPONSE_FILTER_AFTER;
         $this->status = static::STATUS_DONE;
@@ -122,17 +125,17 @@ class Transaction implements TransactionInterface, ContextSensitiveInterface, Ha
     }
 
     /**
-     * @return FilterQueue
+     * @return FilterBundle
      */
-    public function getFilters(): FilterQueue
+    public function getFilters(): FilterBundle
     {
         return $this->filters;
     }
 
     /**
-     * @return MiddlewareStack
+     * @return MiddlewareBundle
      */
-    public function getMiddlewares(): MiddlewareStack
+    public function getMiddlewares(): MiddlewareBundle
     {
         return $this->middlewares;
     }
