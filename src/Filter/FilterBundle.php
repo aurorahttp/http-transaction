@@ -5,7 +5,7 @@ namespace Aurora\Http\Transaction\Filter;
 use Aurora\Http\Handler\Bundle\PriorityBundle;
 use Aurora\Http\Handler\ClosureHandler;
 use Aurora\Http\Handler\HandlerInterface;
-use Aurora\Http\Message\Filter\MessageFilterInterface;
+use Aurora\Http\Message\Filter\FilterInterface;
 use Aurora\Http\Transaction\TransactionInterface;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @author Panlatent <panlatent@gmail.com>
  */
-class FilterBundle implements MessageFilterInterface
+class FilterBundle implements FilterInterface
 {
     /**
      * @var TransactionInterface
@@ -33,7 +33,7 @@ class FilterBundle implements MessageFilterInterface
         $this->bundle = new PriorityBundle();
     }
 
-    public function insert(MessageFilterInterface $filter)
+    public function insert(FilterInterface $filter)
     {
         if (! $filter instanceof HandlerInterface) {
             $filter = new ClosureHandler(function ($request, HandlerInterface $handler) use ($filter) {
