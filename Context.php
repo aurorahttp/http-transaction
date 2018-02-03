@@ -2,7 +2,7 @@
 
 namespace Aurora\Http\Transaction;
 
-use Panlatent\Context\AttributeContext;
+use Aurora\Context\AttributeContext;
 
 class Context extends AttributeContext
 {

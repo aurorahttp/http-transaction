@@ -2,10 +2,10 @@
 
 namespace Aurora\Http\Transaction;
 
+use Aurora\Context\ContextSensitiveInterface;
 use Aurora\Http\Handler\HandlerInterface;
 use Aurora\Http\Transaction\Filter\FilterBundle;
 use Aurora\Http\Transaction\Middleware\MiddlewareBundle;
-use Panlatent\Context\ContextSensitiveInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
